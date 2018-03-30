@@ -15,17 +15,27 @@ class Response(val message: String)
 @RestController
 class UserController(val userRepository: UserRepository) {
 
+    @CrossOrigin(origins = ["http://localhost:3000"])
     @GetMapping("")
     fun root(response: HttpServletResponse) {
         response.sendRedirect("/api/user")
     }
 
+    @CrossOrigin(origins = ["http://localhost:3000"])
     @GetMapping("api/user")
     fun user() = userRepository.findAll()
 
+    @CrossOrigin(origins = ["http://localhost:3000"])
     @PostMapping("api/user")
     fun userPost(@Valid @RequestBody user: User): ResponseEntity<Response> {
         userRepository.insert(user)
+        return ResponseEntity.status(HttpStatus.OK).body(Response("ok"))
+    }
+
+    @CrossOrigin(origins = ["http://localhost:3000"])
+    @DeleteMapping("api/user")
+    fun userPost(@RequestParam email: String): ResponseEntity<Response> {
+        userRepository.deleteById(email)
         return ResponseEntity.status(HttpStatus.OK).body(Response("ok"))
     }
 }

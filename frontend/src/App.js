@@ -1,21 +1,77 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import * as React from "react/cjs/react.development";
 
-class App extends Component {
-  render() {
+class App extends React.Component {
+    render() {
+        return (
+            <UserList/>
+        )
+    }
+}
+
+class UserList extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            error: null,
+            isLoaded: false,
+            items: []
+        }
+    }
+
+    render() {
+        const {error, isLoaded, items} = this.state
+
+        if (error) {
+            return <h3>Error: {error.message}</h3>
+        } else if (!isLoaded) {
+            return <h3>Loading...</h3>
+        } else {
+            return (
+                <ul>
+                    {items.map(item => (this.renderUser(item)))}
+                </ul>
+            )
+        }
+    }
+
+    renderUser(user) {
+        return (
+            <User value={user}/>
+        )
+    }
+
+    fetchData() {
+        console.log("fetching...");
+        fetch("http://localhost:8080/api/user")
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    this.setState({
+                        isLoaded: true,
+                        error:null,
+                        items: result
+                    });
+                },
+                (error) => {
+                    this.setState({
+                        isLoaded: true,
+                        error: error
+                    });
+                }
+            )
+    }
+
+    componentDidMount() {
+        this.fetchData();
+        setInterval(this.fetchData.bind(this), 2000);
+    }
+}
+
+function User(props) {
+    console.log(props);
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
-    );
-  }
+        <li>{props.value.username} ({props.value.email})</li>
+    )
 }
 
 export default App;
