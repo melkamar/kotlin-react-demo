@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.concurrent.atomic.AtomicLong
+import javax.servlet.http.HttpServletResponse
 import javax.validation.Valid
 import javax.validation.constraints.Email
 
@@ -14,7 +15,10 @@ class Response(val message: String)
 @RestController
 class UserController(val userRepository: UserRepository) {
 
-    val counter = AtomicLong()
+    @GetMapping("")
+    fun root(response: HttpServletResponse) {
+        response.sendRedirect("/api/user")
+    }
 
     @GetMapping("api/user")
     fun user() = userRepository.findAll()
